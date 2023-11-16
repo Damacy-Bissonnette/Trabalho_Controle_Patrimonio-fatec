@@ -1,0 +1,173 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Patrimonio {
+    int id;
+    char descricao[100];
+    char localizacao[50];
+};
+
+struct Usuario {
+    int id;
+    char nome[50];
+    char cargo[50];
+};
+
+// Função para salvar um patrimônio em um arquivo
+void salvarPatrimonio(struct Patrimonio patrimonio) {
+    FILE *arquivo;
+    arquivo = fopen("patrimonios.txt", "a");
+
+    if (arquivo != NULL) {
+        fprintf(arquivo, "%d;%s;%s\n", patrimonio.id, patrimonio.descricao, patrimonio.localizacao);
+        fclose(arquivo);
+    }
+}
+
+// Função para salvar um usuário em um arquivo
+void salvarUsuario(struct Usuario usuario) {
+    FILE *arquivo;
+    arquivo = fopen("usuarios.txt", "a");
+
+    if (arquivo != NULL) {
+        fprintf(arquivo, "%d;%s;%s\n", usuario.id, usuario.nome, usuario.cargo);
+        fclose(arquivo);
+    }
+}
+
+// Função para buscar um item por ID em um arquivo
+void buscarPorID(const char *filename, int id) {
+    FILE *arquivo = fopen(filename, "r");
+    if (arquivo != NULL) {
+        if (strcmp(filename, "patrimonios.txt") == 0) {
+            struct Patrimonio patrimonio;
+            while (fscanf(arquivo, "%d;%[^;];%[^;]\n", &patrimonio.id, patrimonio.descricao, patrimonio.localizacao) != EOF) {
+                if (patrimonio.id == id) {
+                    printf("ID: %d, Descrição: %s, Localização: %s\n", patrimonio.id, patrimonio.descricao, patrimonio.localizacao);
+                    fclose(arquivo);
+                    return;
+                }
+            }
+        } else if (strcmp(filename, "usuarios.txt") == 0) {
+            struct Usuario usuario;
+            while (fscanf(arquivo, "%d;%[^;];%[^;]\n", &usuario.id, usuario.nome, usuario.cargo) != EOF) {
+                if (usuario.id == id) {
+                    printf("ID: %d, Nome: %s, Cargo: %s\n", usuario.id, usuario.nome, usuario.cargo);
+                    fclose(arquivo);
+                    return;
+                }
+            }
+        }
+        printf("Item não encontrado.\n");
+        fclose(arquivo);
+    } else {
+        printf("Erro ao abrir o arquivo.\n");
+    }
+}
+
+// Função para editar informações de um item por ID em um arquivo
+void editarPorID(const char *filename, int id) {
+    // Implemente a lógica para editar as informações do item no arquivo
+    printf("Editar %s por ID: %d\n", filename, id);
+}
+
+// Função para excluir um item por ID em um arquivo
+void excluirPorID(const char *filename, int id) {
+    // Implemente a lógica para excluir o item no arquivo
+    printf("Excluir %s por ID: %d\n", filename, id);
+}
+
+// Função para adicionar um novo patrimônio
+void adicionarPatrimonio() {
+    struct Patrimonio novoPatrimonio;
+
+    printf("Informe o ID do patrimônio: ");
+    scanf("%d", &novoPatrimonio.id);
+
+    printf("Informe a descrição do patrimônio: ");
+    scanf("%s", novoPatrimonio.descricao);
+
+    printf("Informe a localizacao do patrimônio: ");
+    scanf("%s", novoPatrimonio.localizacao);
+
+    salvarPatrimonio(novoPatrimonio);
+
+    printf("Patrimônio adicionado com sucesso!\n");
+}
+
+// Função para adicionar um novo usuário
+void adicionarUsuario() {
+    struct Usuario novoUsuario;
+
+    printf("Informe o ID do usuário: ");
+    scanf("%d", &novoUsuario.id);
+
+    printf("Informe o nome do usuário: ");
+    scanf("%s", novoUsuario.nome);
+
+    printf("Informe o cargo do usuário: ");
+    scanf("%s", novoUsuario.cargo);
+
+    salvarUsuario(novoUsuario);
+
+    printf("Usuário adicionado com sucesso!\n");
+}
+
+// Função principal (Menu de Interface de Usuário)
+int main() {
+    int opcao;
+    while (1) {
+        printf("Selecione uma opção:\n");
+        printf("1. Adicionar patrimônio\n");
+        printf("2. Adicionar usuário\n");
+        printf("3. Sair\n");
+        printf("4. Buscar item por ID\n");
+        printf("5. Editar item por ID\n");
+        printf("6. Excluir item por ID\n");
+        printf("Opção: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                adicionarPatrimonio();
+                break;
+            case 2:
+                adicionarUsuario();
+                break;
+            case 3:
+                return 0;
+            case 4:
+                printf("Informe o nome do arquivo (patrimonios.txt ou usuarios.txt): ");
+                char filename[50];
+                scanf("%s", filename);
+                printf("Informe o ID a ser buscado: ");
+                int idBuscar;
+                scanf("%d", &idBuscar);
+                buscarPorID(filename, idBuscar);
+                break;
+            case 5:
+                printf("Informe o nome do arquivo (patrimonios.txt ou usuarios.txt): ");
+                char filenameEditar[50];
+                scanf("%s", filenameEditar);
+                printf("Informe o ID a ser editado: ");
+                int idEditar;
+                scanf("%d", &idEditar);
+                editarPorID(filenameEditar, idEditar);
+                break;
+            case 6:
+                printf("Informe o nome do arquivo (patrimonios.txt ou usuarios.txt): ");
+                char filenameExcluir[50];
+                scanf("%s", filenameExcluir);
+                printf("Informe o ID a ser excluído: ");
+                int idExcluir;
+                scanf("%d", &idExcluir);
+                excluirPorID(filenameExcluir, idExcluir);
+                break;
+            default:
+                printf("Opção inválida.\n");
+        }
+    }
+
+    return 0;
+}
